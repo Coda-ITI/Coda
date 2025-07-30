@@ -1,8 +1,8 @@
-PRODUCT_PACKAGES += libc++ libcommonapi libcommonapi_someip libvsomeip3 libvsomeip_cfg libvsomeip_e2e libvsomeip_sd libvsomeip android.hardware.automotive.evs-default 
+PRODUCT_PACKAGES += libcommonapi libcommonapi_someip libvsomeip3 libvsomeip3-cfg libvsomeip3-e2e libvsomeip3-sd  android.hardware.automotive.evs-default 
 
 PRODUCT_COPY_FILES += \
-		vendor/Coda/static_ip/init.staticip.rc:root/init.staticip.rc \
-		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc \
+		#vendor/Coda/static_ip/init.staticip.rc:root/init.staticip.rc \
+		#vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc \
 		vendor/Coda/evs_config/evs_configuration_override.xml:$(TARGET_COPY_OUT_VENDOR)/etc/automotive/evs/evs_configuration_override.xml \
 		
 #PRODUCT_PACKAGES += \
