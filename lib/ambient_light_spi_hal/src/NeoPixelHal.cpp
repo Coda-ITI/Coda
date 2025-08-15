@@ -1,4 +1,3 @@
-
 #include "NeoPixelHal.hpp"
 #include <cstdio>
 #include <fcntl.h>
@@ -148,6 +147,18 @@ void NeoPixelHal::setRandomMode() {
     });
 }
 
+bool NeoPixelHal::getColor(uint32_t index, uint8_t* red, uint8_t* green, uint8_t* blue) const {
+    if (index >= numLeds) {
+        fprintf(stderr, "Error: LED index out of range\n");
+        return false;
+    }
+    // Decode from ledData (assuming GRB order from encodeColor)
+    *green = ledData[index * 24 + 0]; // First byte is green (adjust based on encoding)
+    *red = ledData[index * 24 + 1];   // Second byte is red
+    *blue = ledData[index * 24 + 2];  // Third byte is blue
+    return true;
+}
+
 void NeoPixelHal::setGlobalFadeMode() {
     static std::atomic<bool> running{false}; // Static to persist across calls
     std::lock_guard<std::mutex> lock(threadMutex);
@@ -226,9 +237,17 @@ void NeoPixelHal::setGlobalFadeMode() {
 void NeoPixelHal::stopThreads() {
     std::lock_guard<std::mutex> lock(threadMutex); // Protect thread management
 
-    // Stop the fade((randomModeRunning) {
+    // Stop the fade mode thread if running
+    if (fadeModeRunning) {
+        fadeModeRunning = false;
+    }
+
+    // Stop random mode if running
+    if (randomModeRunning) {
         randomModeRunning = false;
         if (randomModeThread.joinable()) {
             randomModeThread.join();
         }
+    }
 }
+

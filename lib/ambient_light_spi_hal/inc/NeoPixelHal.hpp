@@ -1,4 +1,3 @@
-
 #ifndef NEOPIXEL_HAL_HPP
 #define NEOPIXEL_HAL_HPP
 
@@ -70,6 +69,8 @@ public:
     void setGlobalFadeMode();
 
     void stopThreads();
+    
+    bool getColor(uint32_t index, uint8_t* red, uint8_t* green, uint8_t* blue) const;
 
 private:
     std::atomic<bool> randomModeRunning{false}; // Flag to control the random mode thread
@@ -95,6 +96,8 @@ private:
      * @return Encoded SPI data for the LED.
      */
     std::vector<uint8_t> encodeColor(uint8_t red, uint8_t green, uint8_t blue);
+
+
 };
 
 #endif // NEOPIXEL_HAL_HPP

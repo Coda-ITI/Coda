@@ -1,8 +1,26 @@
 cc_library_shared {
-    name: "libambientlight",
-    export_include_dirs: ["inc"],
-    srcs: ["src/*.cpp"],
-    shared_libs: ["liblog"],
+    name: "neopixelhal",
     vendor: true,
-    host_supported: true,
+    srcs: [
+        "src/NeoPixelHal.cpp", 
+    ],
+    cflags: [
+        "-Wall",             
+        "-Werror",           
+        "-std=c++17",        
+    ],
+    shared_libs: [
+        "liblog",           
+    ],
+    header_libs: [
+        "neopixelhal_headers",
+    ],
+    host_supported : true,
+}
+
+cc_library_headers {
+    name: "neopixelhal_headers",
+    vendor: true,
+    export_include_dirs: ["inc"],
+    host_supported : true,
 }
