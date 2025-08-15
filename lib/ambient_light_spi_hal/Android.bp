@@ -1,0 +1,8 @@
+cc_library_shared {
+    name: "libambientlight",
+    export_include_dirs: ["inc"],
+    srcs: ["src/*.cpp"],
+    shared_libs: ["liblog"],
+    vendor: true,
+    host_supported: true,
+}
