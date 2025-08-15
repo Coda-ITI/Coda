@@ -1,4 +1,4 @@
-PRODUCT_PACKAGES += libcommonapi libcommonapi_someip libvsomeip3 libvsomeip3-cfg libvsomeip3-e2e libvsomeip3-sd  android.hardware.automotive.evs-default neopixelhal
+PRODUCT_PACKAGES += libcommonapi libcommonapi_someip libvsomeip3 libvsomeip3-cfg libvsomeip3-e2e libvsomeip3-sd  android.hardware.automotive.evs-default neopixelhal CodaAssistant
 
 PRODUCT_COPY_FILES += \
 		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc \
