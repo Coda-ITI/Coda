@@ -1,0 +1,7 @@
+service vhal_native_client /system/bin/vhal_native_client
+    class main
+    user system
+    group system
+    disabled
+    oneshot
+

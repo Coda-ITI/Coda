@@ -1,0 +1,24 @@
+aidl_interface {
+    name: "android.vendor.coda",
+    vendor_available: true,
+    srcs: [
+        "android/vendor/coda/*.aidl",
+    ],
+    backend: {
+        java: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+    stability: "vintf",
+    frozen: true,
+    versions_with_info: [
+        {
+            version: "1",
+            imports: [],
+        },
+    ],
+
+}

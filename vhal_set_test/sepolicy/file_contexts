@@ -1,0 +1,2 @@
+/system/bin/vhal_native_client   u:object_r:vhal_native_client_exec:s0
+

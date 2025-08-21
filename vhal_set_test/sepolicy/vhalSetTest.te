@@ -1,0 +1,12 @@
+type vhal_native_client, domain;
+type vhal_native_client_exec, exec_type, file_type, system_file_type;
+
+init_daemon_domain(vhal_native_client)
+
+# Allow binder/hwbinder use
+hwbinder_use(vhal_native_client)
+binder_use(vhal_native_client)
+
+# Allow talking to vehicle HAL
+hal_client_domain(vhal_native_client, hal_vehicle)
+
