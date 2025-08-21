@@ -1,41 +1,31 @@
-#include "led.hpp"
-#include "gpiohal.hpp"
+#include "ObservationIVIService.hpp"
 
-#include <android-base/logging.h>
-#include <android/binder_manager.h>
-#include <android/binder_process.h>
-#include <android/binder_ibinder.h>
-#include <aidl/android/vendor/gpio/IGpioService.h> 
+int main() 
+{
 
-#define LED_PIN 17
-#define HIGH 1
-#define LOW 0
-
-using aidl::android::vendor::gpio::GpioService;
-
-int main() {
-
-    LOG(INFO) << "Bot_service starting...";
+    std::cout << "ObservationIVIService starting..." << std::endl;
 
     ABinderProcess_setThreadPoolMaxThreadCount(0);
-    std::shared_ptr<aidl::android::vendor::gpio::GpioService> led = ndk::SharedRefBase::make<aidl::android::vendor::gpio::GpioService>();
-     if (!led) {
-        LOG(ERROR) << "Failed to create Bot service instance.";
+    std::shared_ptr<ObservationIVIService> observation = ndk::SharedRefBase::make<ObservationIVIService>();
+    if (!observation) 
+    {
+        std::cout << "Failed to create Bot service instance." << std::endl;
         return EXIT_FAILURE;
     }
-    const std::string instance = std::string() + aidl::android::vendor::gpio::IGpioService::descriptor + "/default";
-    LOG(INFO) << "Registering service with name: " << instance;
-
     
-    
-    binder_status_t status = AServiceManager_addService(led->asBinder().get(), instance.c_str());
+    const std::string instance = std::string() + IObservationIVIService::descriptor + "/default";
+    std::cout << "Registering service with name: " << instance << std::endl;
 
-        if (status == STATUS_OK) {
-            LOG(INFO) << "Service registered successfully.";
-        } else {
-            LOG(ERROR) << "Failed to register service. Status: " << status;
-            return EXIT_FAILURE;
-        }
-        ABinderProcess_joinThreadPool();
+    binder_status_t status = AServiceManager_addService(observation->asBinder().get(), instance.c_str());
+
+    if (status == STATUS_OK) {
+        std::cout << "Service registered successfully." << std::endl;
+    } else {
+        std::cout << "Failed to register service. Status: " << status << std::endl;
         return EXIT_FAILURE;
+    }
+
+    ABinderProcess_joinThreadPool();
+    
+    return EXIT_FAILURE;
 }
