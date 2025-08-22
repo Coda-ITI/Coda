@@ -10,7 +10,7 @@ cc_binary {
         "libutils",
         "libbase",
         "libutils",
-        "android.vendor.coda.observer-V1-ndk",
+        "android.vendor.coda.observation-V1-ndk",
     ],
     ldflags: ["-u","-main"],
     vendor_available: true,

@@ -1,8 +1,7 @@
 aidl_interface {
-    name: "android.vendor.coda.observer",
-    //vendor_available: true,
+    name: "android.vendor.coda.observation",
     srcs: [
-        "android/vendor/coda/observer/*.aidl",
+        "android/vendor/coda/observation/*.aidl",
     ],
     backend: {
         java: {
@@ -19,4 +18,5 @@ aidl_interface {
             imports: [],
         },
     ],
+
 }

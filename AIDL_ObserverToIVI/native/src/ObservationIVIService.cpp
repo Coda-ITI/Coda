@@ -1,6 +1,6 @@
 #include "ObservationIVIService.hpp"
 
-namespace aidl::android::vendor::coda::observer {
+namespace aidl::android::vendor::coda::observation {
 	ObservationIVIContract::ObservationIVIContract()
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
@@ -11,46 +11,66 @@ namespace aidl::android::vendor::coda::observer {
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
 		stopCallbackThread();
 	}
-	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::ISpeedReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::ISpeedReadings>& in_cb) 
 	{
-		this->mSpeedValCb = in_cb;
 		if (in_cb != nullptr)
 		{
+			this->mSpeedValCb = in_cb;
 			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "speed callback registered successfully");
 		}
-	    return ::ndk::ScopedAStatus::ok();
-	}
-
-	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IRPMReadings>& in_cb) 
-	{
-		this->mRPMValCb = in_cb;
-		if (in_cb != nullptr)
+		else 
 		{
-			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "rpm callback registered successfully");
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "speed callback pointer is null");
 		}
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IUltrasonicReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IRPMReadings>& in_cb) 
 	{
-		this->mUltrasonicReadingCb = in_cb;
 		if (in_cb != nullptr)
 		{
-			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic callback registered successfully");
+			this->mRPMValCb = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "rpm callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "rpm callback pointer is null");
+		}
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb, int32_t in_sensorIndex) 
+	{
+		
+		if (in_cb != nullptr)
+		{
+			if (in_sensorIndex < 4)
+			{
+				this->mUltrasonicReadingCbs[in_sensorIndex] = in_cb;
+				__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic callback registered successfully");
+			}
+			else 
+			{
+				__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic callback invalid index");
+			}
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic callback pointer is null");
 		}
 		return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IDoorStateReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
 	{
-		/*if (in_cb != nullptr)
-		{
-			this->mVehicleCb = in_cb;	
-		}*/
-		this->mDoorStateCb = in_cb;
 		if (in_cb != nullptr)
 		{
+			this->mDoorStateCb = in_cb;
 			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "door callback pointer is null");
 		}
 	    return ::ndk::ScopedAStatus::ok();
 	}
@@ -65,15 +85,35 @@ namespace aidl::android::vendor::coda::observer {
 	void ObservationIVIContract::startCallbackThread() 
 	{
 	    mRunning = true;
-	    mWorkerThread = std::thread([this]() {
+		std::vector<DoorState> doorStates = {
+			{.isOpen = true, .position = 0},
+			{.isOpen = false, .position = 1},
+			{.isOpen = true, .position = 2},
+			{.isOpen = false, .position = 3},
+		};
+		std::unordered_map<int, float> ultrasonicReadings = {
+			{0, 1.2},
+			{1, 2.4},
+			{2, 3.6},
+			{3, 4.8},
+		};
+
+	    mWorkerThread = std::thread([&, this]() {
 	        while (mRunning) 
 			{
 	            std::this_thread::sleep_for(std::chrono::seconds(3));
 
-	            if (mDoorStateCb) mDoorStateCb->onDoorStateChanged(1, true);
-	            if (mRPMValCb) mRPMValCb->onRpmChanged(1500);
-	            if (mSpeedValCb) mSpeedValCb->onSpeedChanged(80);
-	            if (mUltrasonicReadingCb) mUltrasonicReadingCb->onUltrasonicChanged(2, 6.9);
+	            if (mDoorStateCb != nullptr) mDoorStateCb->onDoorStateChanged(doorStates);
+	            if (mRPMValCb != nullptr) mRPMValCb->onRpmChanged(1500);
+	            if (mSpeedValCb != nullptr) mSpeedValCb->onSpeedChanged(80);
+	            if (mUltrasonicReadingCbs.empty()) 
+				{
+					for (uint32_t iter = 0; iter < mUltrasonicReadingCbs.size(); iter++)
+					{
+						if (mUltrasonicReadingCbs[iter] != nullptr)
+							mUltrasonicReadingCbs[iter]->onUltrasonicChanged(iter, ultrasonicReadings[iter]);
+					}
+				} 
 	        }
 	    });
 	}
