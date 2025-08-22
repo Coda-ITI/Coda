@@ -1,6 +1,0 @@
-on boot
-    exec -- /system/bin/ip addr add 192.168.1.7/24 dev eth0
-    exec -- /system/bin/ip link set eth0 up
-    exec -- /system/bin/sleep 1
-    exec -- /system/bin/ip route add default via 192.168.1.1 dev eth0
-
