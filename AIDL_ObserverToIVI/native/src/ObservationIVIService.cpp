@@ -1,53 +1,89 @@
 #include "ObservationIVIService.hpp"
 
-::ndk::ScopedAStatus registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) 
-{
-	this->mSpeedValCb = in_cb;
-	if (in_cb != nullptr)
+namespace aidl::android::vendor::coda {
+	ObservationIVIContract::ObservationIVIContract()
 	{
-		std::cout << "speed callback registered successfully" << std::endl;
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
+		startCallbackThread();
 	}
-    return ::ndk::ScopedAStatus::ok();
-}
-
-::ndk::ScopedAStatus registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) 
-{
-	this->mRPMValCb = in_cb;
-	if (in_cb != nullptr)
+	ObservationIVIContract::~ObservationIVIContract()
 	{
-		std::cout << "rpm callback registered successfully" << std::endl;
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
+		stopCallbackThread();
 	}
-    return ::ndk::ScopedAStatus::ok();
-}
-
-::ndk::ScopedAStatus registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IUltrasonicReadings>& in_cb) 
-{
-	this->mUltrasonicReadingCb = in_cb;
-	if (in_cb != nullptr)
+	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) 
 	{
-		std::cout << "ultrasonic callback registered successfully" << std::endl;
+		this->mSpeedValCb = in_cb;
+		if (in_cb != nullptr)
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "speed callback registered successfully");
+		}
+	    return ::ndk::ScopedAStatus::ok();
 	}
-	return ::ndk::ScopedAStatus::ok();
-}
 
-::ndk::ScopedAStatus registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) 
-{
-	/*if (in_cb != nullptr)
+	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) 
 	{
-		this->mVehicleCb = in_cb;	
-	}*/
-	this->mDoorStateCb = in_cb;
-	if (in_cb != nullptr)
-	{
-		std::cout << "door state callback registered successfully" << std::endl;
+		this->mRPMValCb = in_cb;
+		if (in_cb != nullptr)
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "rpm callback registered successfully");
+		}
+	    return ::ndk::ScopedAStatus::ok();
 	}
-    return ::ndk::ScopedAStatus::ok();
-}
 
-::ndk::ScopedAStatus changeSystemTheme(bool in_isLightMode) 
-{
-	std::cout << "received a flag of value " << in_isLightMode << " to change the system them" << std::endl;
-	// notify->changeTheme() /** using IVI stub */
-    return ::ndk::ScopedAStatus::ok();
-}
+	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IUltrasonicReadings>& in_cb) 
+	{
+		this->mUltrasonicReadingCb = in_cb;
+		if (in_cb != nullptr)
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic callback registered successfully");
+		}
+		return ::ndk::ScopedAStatus::ok();
+	}
 
+	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) 
+	{
+		/*if (in_cb != nullptr)
+		{
+			this->mVehicleCb = in_cb;	
+		}*/
+		this->mDoorStateCb = in_cb;
+		if (in_cb != nullptr)
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
+		}
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+	::ndk::ScopedAStatus ObservationIVIContract::changeSystemTheme(bool in_isLightMode) 
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "received a flag of value %d to change the system them");
+		// notify->changeTheme() /** using IVI stub */
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+	void ObservationIVIContract::startCallbackThread() 
+	{
+	    mRunning = true;
+	    mWorkerThread = std::thread([this]() {
+	        while (mRunning) 
+			{
+	            std::this_thread::sleep_for(std::chrono::seconds(3));
+
+	            if (mDoorStateCb) mDoorStateCb->onDoorStateChanged(1, true);
+	            if (mRPMValCb) mRPMValCb->onRpmChanged(1500);
+	            if (mSpeedValCb) mSpeedValCb->onSpeedChanged(80);
+	            if (mUltrasonicReadingCb) mUltrasonicReadingCb->onUltrasonicChanged(2, 6.9);
+	        }
+	    });
+	}
+
+	void ObservationIVIContract::stopCallbackThread() 
+	{
+	    mRunning = false;
+	    if (mWorkerThread.joinable()) 
+		{
+	        mWorkerThread.join();
+	    }
+	}
+}

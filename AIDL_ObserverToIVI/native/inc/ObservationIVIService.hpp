@@ -11,21 +11,31 @@
 #include <android/binder_process.h>
 #include <android/log.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <atomic>
 
-using namespace aidl::android::vendor::coda;
+#define LOG_TAG "ServiceBinding"
 
-class ObservationIVIContract : public aidl::android::vendor::coda::BnObservationIVIContract {
-	private:
-    	std::shared_ptr<IDoorStateReadings> mDoorStateCb;
-    	std::shared_ptr<IRPMReadings> mRPMValCb;
-    	std::shared_ptr<ISpeedReadings> mSpeedValCb;
-    	std::shared_ptr<IUltrasonicReadings> mUltrasonicReadingCb;
-    
-	public:
-		::ndk::ScopedAStatus registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) override;
-  		::ndk::ScopedAStatus registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) override;
-  		::ndk::ScopedAStatus registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IUltrasonicReadings>& in_cb) override;
-  		::ndk::ScopedAStatus registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) override;
-  		::ndk::ScopedAStatus changeSystemTheme(bool in_isLightMode) override;
-};
-
+namespace aidl::android::vendor::coda {
+	class ObservationIVIContract : public aidl::android::vendor::coda::BnObservationServiceIVIContract {
+		private:
+    		std::shared_ptr<IDoorStateReadings> mDoorStateCb;
+    		std::shared_ptr<IRPMReadings> mRPMValCb;
+    		std::shared_ptr<ISpeedReadings> mSpeedValCb;
+    		std::shared_ptr<IUltrasonicReadings> mUltrasonicReadingCb;
+			std::atomic<bool> mRunning{false};
+			std::thread mWorkerThread;
+		
+		public:
+			ObservationIVIContract();
+			~ObservationIVIContract();
+			::ndk::ScopedAStatus registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IUltrasonicReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) override;
+  			::ndk::ScopedAStatus changeSystemTheme(bool in_isLightMode) override;
+			void startCallbackThread();
+			void stopCallbackThread();
+	};
+}

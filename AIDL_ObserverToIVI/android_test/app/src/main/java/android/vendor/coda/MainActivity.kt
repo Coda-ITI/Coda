@@ -1,20 +1,73 @@
 package android.vendor.coda
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.os.IBinder
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import java.lang.reflect.InvocationTargetException
+
 
 class MainActivity : AppCompatActivity() {
+    lateinit var observation : IObservationServiceIVIContract
+    val TAG : String = "ServiceBinding"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        try {
+            @SuppressLint("PrivateApi") val serviceManagerClass =
+                Class.forName("android.os.ServiceManager")
+            val getServiceMethod = serviceManagerClass.getMethod(
+                "getService",
+                String::class.java
+            )
+
+            val result = getServiceMethod.invoke(null, "android.vendor.coda.IObservationServiceIVIContract/default")
+
+            if (result != null) {
+                val binder = result as IBinder
+                observation = IObservationServiceIVIContract.Stub.asInterface(binder)
+                Log.d(TAG, "Successfully bound to IObservationServiceIVIContract!")
+            } else {
+                Log.e(TAG, "Failed to get service binder.")
+            }
+        } catch (e: ClassNotFoundException) {
+            Log.e(TAG, "Class not found: " + e.message)
+        } catch (e: NoSuchMethodException) {
+            Log.e(TAG, "Method not found: " + e.message)
+        } catch (e: InvocationTargetException) {
+            Log.e(TAG, "Invocation target exception: " + e.message)
+        } catch (e: IllegalAccessException) {
+            Log.e(TAG, "Illegal access exception: " + e.message)
+        }
+
+        if (observation != null) {
+            observation.registerRPMReadingsCallback(object : IRPMReadings.Stub() {
+                override fun onRpmChanged(rpm: Int) {
+                    Log.d(TAG, "RPMCallback: Received RPM: $rpm")
+                }
+            })
+
+            observation.registerSpeedReadingsCallback(object : ISpeedReadings.Stub() {
+                override fun onSpeedChanged(speed: Int) {
+                    Log.d(TAG, "SpeedCallback: Received speed: $speed")
+                }
+            })
+
+            observation.registerUltrasonicReadingsCallback(object : IUltrasonicReadings.Stub() {
+                override fun onUltrasonicChanged(position: Int, reading: Float) {
+                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+                }
+            })
+
+            observation.registerDoorStateReadingsCallback(object : IDoorStateReadings.Stub() {
+                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+                    Log.d(TAG, "DoorCallback: Received position and state: $position, $isOpen")
+                }
+            })
+        } else {
+            Log.e(TAG, "observation is null")
         }
     }
 }
