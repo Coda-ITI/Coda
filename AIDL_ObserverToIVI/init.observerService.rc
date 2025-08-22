@@ -1,8 +1,0 @@
-service observerService /vendor/bin/observerService
-    class late_start
-    user root
-    group root
-    seclabel u:object_r:observerService_exec:s0
-
-on boot: 
-    start observerService

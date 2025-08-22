@@ -1,0 +1,15 @@
+aidl_interface {
+    name: "android.vendor.coda.observation",
+    vendor_available: true,
+    srcs: [
+        "android/vendor/coda/observation/*.aidl",
+    ],
+    backend: {
+        java: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+}

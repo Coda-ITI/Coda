@@ -1,8 +1,0 @@
-{
-    "coda.vehicle.Perception" : {
-        "service_id": 4661,
-        "instances" : {
-            "coda.vehicle.Perception": 22137
-        }
-    }
-}
