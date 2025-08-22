@@ -1,8 +1,0 @@
-service gpioService /vendor/bin/gpioService
-    class late_start
-    user root
-    group root
-    seclabel u:object_r:gpioService_exec:s0
-
-on boot: 
-    start gpioService

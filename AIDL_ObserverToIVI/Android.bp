@@ -1,7 +1,7 @@
 cc_binary {
-    name: "ObserverService",
+    name: "observerService",
     include_dirs: ["vendor/Coda/AIDL_ObserverToIVI/native/inc"],
-    srcs: ["src/*.cpp",],
+    srcs: ["native/src/*.cpp",],
     shared_libs: [
         "libc++",
         "liblog",
@@ -10,10 +10,10 @@ cc_binary {
         "libutils",
         "libbase",
         "libutils",
-        "android.vendor.coda-V1-ndk"],
+        "android.vendor.coda-V1-ndk",
+    ],
     ldflags: ["-u","-main"],
     vendor_available: true,
-    stl : "libc++",
-    cflags : ["-std=c++17"],
-    //init_rc: ["init.gpioService.rc",],
+    //host_supported: true,
+    init_rc: ["init.observerService.rc",],
 }

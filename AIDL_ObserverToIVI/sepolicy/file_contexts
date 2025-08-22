@@ -1,1 +1,1 @@
-/vendor/bin/gpioService u:object_r:gpioService_exec:s0
+/vendor/bin/observerService u:object_r:observerService_exec:s0

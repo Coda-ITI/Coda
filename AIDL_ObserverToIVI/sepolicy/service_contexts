@@ -1,1 +1,1 @@
-android.vendor.gpio.IGpioService/default u:object_r:gpioService_api:s0
+android.vendor.coda.IObservationServiceIVIContract/default u:object_r:observerService_api:s0
