@@ -1,11 +1,14 @@
-PRODUCT_PACKAGES += libambientlight ObservationServiceApp observerService
+PRODUCT_PACKAGES += libambientlight ObservationServiceApp observer_service
 
 PRODUCT_COPY_FILES += \
 		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc 
-		
+
 BOARD_SEPOLICY_DIRS += vendor/Coda/AIDL_ObserverToIVI/sepolicy 
 		
-#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += vendor/Coda/AIDL_ObserverToIVI/FrameworkCompatibilityMatrix/framework_compatibility_matrix.xml
+		
+#DEVICE_MANIFEST_FILE += vendor/Coda/AIDL_ObserverToIVI/FrameworkCompatibilityMatrix/observer_service.xml
+
+#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += vendor/Coda/AIDL_ObserverToIVI/FrameworkCompatibilityMatrix/observer_service.xml
 		
 		
 		

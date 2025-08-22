@@ -1,8 +1,8 @@
 aidl_interface {
-    name: "android.vendor.coda",
-    vendor_available: true,
+    name: "android.vendor.coda.observer",
+    //vendor_available: true,
     srcs: [
-        "android/vendor/coda/*.aidl",
+        "android/vendor/coda/observer/*.aidl",
     ],
     backend: {
         java: {
@@ -12,7 +12,6 @@ aidl_interface {
             enabled: true,
         },
     },
-    stability: "vintf",
     frozen: true,
     versions_with_info: [
         {
@@ -20,5 +19,4 @@ aidl_interface {
             imports: [],
         },
     ],
-
 }

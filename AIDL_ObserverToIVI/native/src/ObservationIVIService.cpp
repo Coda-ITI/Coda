@@ -1,6 +1,6 @@
 #include "ObservationIVIService.hpp"
 
-namespace aidl::android::vendor::coda {
+namespace aidl::android::vendor::coda::observer {
 	ObservationIVIContract::ObservationIVIContract()
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
@@ -11,7 +11,7 @@ namespace aidl::android::vendor::coda {
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
 		stopCallbackThread();
 	}
-	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::ISpeedReadings>& in_cb) 
 	{
 		this->mSpeedValCb = in_cb;
 		if (in_cb != nullptr)
@@ -21,7 +21,7 @@ namespace aidl::android::vendor::coda {
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IRPMReadings>& in_cb) 
 	{
 		this->mRPMValCb = in_cb;
 		if (in_cb != nullptr)
@@ -31,7 +31,7 @@ namespace aidl::android::vendor::coda {
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IUltrasonicReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IUltrasonicReadings>& in_cb) 
 	{
 		this->mUltrasonicReadingCb = in_cb;
 		if (in_cb != nullptr)
@@ -41,7 +41,7 @@ namespace aidl::android::vendor::coda {
 		return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) 
+	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observer::IDoorStateReadings>& in_cb) 
 	{
 		/*if (in_cb != nullptr)
 		{
