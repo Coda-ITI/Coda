@@ -19,5 +19,5 @@
 package android.vendor.coda;
 @VintfStability
 interface IDoorStateReadings {
-  void onDoorStateChanged(int position, boolean isOpen);
+  void onDoorStateChanged(in android.vendor.coda.DoorState[] doorStates);
 }

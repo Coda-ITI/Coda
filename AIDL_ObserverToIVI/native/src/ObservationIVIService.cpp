@@ -1,25 +1,112 @@
 #include "ObservationIVIService.hpp"
 
 namespace aidl::android::vendor::coda {
-	ObservationIVIContract::ObservationIVIContract()
+
+
+bool ObservationIVIContract::initSomeIP()
+{
+	// define a bool flag & counter to indicate that app has been initialized successfully
+	bool _init = true;
+	std::chrono::milliseconds timeoutCycle(100);
+	int8_t timeoutCounter = 5;
+
+	// defining capicxx runtime instance
+	auto runtime = CommonAPI::Runtime::get();
+	
+	// make an object of stub impl that is own-able by a shared ptr
+	iviStub = std::make_shared<v1::coda::vehicle::IVIStubImpl>();
+	
+	// define IVI service instance
+	std::string domain = "local";
+	std::string iviInstance = "coda.vehicle.IVI";
+	std::string connection = "IVIApp";
+
+	// initialize perception Proxy (service consumer)
+	CommonAPI::Runtime::setProperty("LibraryBase", "Perception");
+	std::string perceptionInstance = "coda.vehicle.Perception";
+	perceptionProxy = runtime->buildProxy<v1::coda::vehicle::PerceptionProxy>(domain, perceptionInstance, connection);
+	
+	// wait until IVI service is registered successfully
+	while (!runtime->registerService(domain, iviInstance, iviStub_, connection) && (timeoutCounter > 0))
 	{
-		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
-		startCallbackThread();
+		std::cerr << "Failed to register SomeIP service, retrying..." << std::endl;
+		std::this_thread::sleep_for(timeoutCycle);
+		timeoutCounter--;
 	}
-	ObservationIVIContract::~ObservationIVIContract()
+
+	// indicate that service registration has timed out
+	if (timeoutCounter <= 0) 
 	{
-		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
-		stopCallbackThread();
+		_init = false;
+		perror("SomeIP service registration failed");
 	}
-	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) 
+
+	// wait until Perception proxy is available
+	if (_init)
 	{
-		this->mSpeedValCb = in_cb;
-		if (in_cb != nullptr)
+		while (!perceptionProxy_->isAvailable())
 		{
-			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "speed callback registered successfully");
+			perror("Perception proxy not available, retrying...");
+			std::this_thread::sleep_for(timeoutCycle);
 		}
-	    return ::ndk::ScopedAStatus::ok();
 	}
+	
+	// indicates that perception proxy has timed out
+	if (!perceptionProxy_->isAvailable()) 
+	{
+		_init = false;
+		perror("Perception service not available!");
+		goto out;
+	}
+	
+	// subscribe to Perception events
+	speedSubscription_ = perceptionProxy_->getNotifySpeedEvent().subscribe(
+		[this](const uint16_t& speed) {
+			this->handleSpeedChange(speed);
+		}
+	);
+	
+	rpmSubscription_ = perceptionProxy_->getNotifyRPMEvent().subscribe(
+		[this](const uint16_t& rpm) {
+			this->handleRPMChange(rpm);
+		}
+	);
+	
+	multiDoorSubscription_ = perceptionProxy_->getMultiDoorNotifyEvent().subscribe(
+		[this](const std::vector<Perception::S_DoorState>& doorStates) {
+			this->handleDoorStateChange(doorStates);
+		}
+	);
+	
+
+	
+	std::cout << "Observer App has been initialized successfully!" << std::endl;
+
+	isSomeIpInit_ = _init;
+
+	return _init;
+}
+
+
+ObservationIVIContract::ObservationIVIContract()
+{
+	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
+	startCallbackThread();
+}
+ObservationIVIContract::~ObservationIVIContract()
+{
+	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
+	stopCallbackThread();
+}
+::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::ISpeedReadings>& in_cb) 
+{
+	this->mSpeedValCb = in_cb;
+	if (in_cb != nullptr)
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "speed callback registered successfully");
+	}
+	return ::ndk::ScopedAStatus::ok();
+}
 
 	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IRPMReadings>& in_cb) 
 	{
@@ -43,10 +130,6 @@ namespace aidl::android::vendor::coda {
 
 	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::IDoorStateReadings>& in_cb) 
 	{
-		/*if (in_cb != nullptr)
-		{
-			this->mVehicleCb = in_cb;	
-		}*/
 		this->mDoorStateCb = in_cb;
 		if (in_cb != nullptr)
 		{
@@ -60,30 +143,5 @@ namespace aidl::android::vendor::coda {
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "received a flag of value %d to change the system them");
 		// notify->changeTheme() /** using IVI stub */
 	    return ::ndk::ScopedAStatus::ok();
-	}
-
-	void ObservationIVIContract::startCallbackThread() 
-	{
-	    mRunning = true;
-	    mWorkerThread = std::thread([this]() {
-	        while (mRunning) 
-			{
-	            std::this_thread::sleep_for(std::chrono::seconds(3));
-
-	            if (mDoorStateCb) mDoorStateCb->onDoorStateChanged(1, true);
-	            if (mRPMValCb) mRPMValCb->onRpmChanged(1500);
-	            if (mSpeedValCb) mSpeedValCb->onSpeedChanged(80);
-	            if (mUltrasonicReadingCb) mUltrasonicReadingCb->onUltrasonicChanged(2, 6.9);
-	        }
-	    });
-	}
-
-	void ObservationIVIContract::stopCallbackThread() 
-	{
-	    mRunning = false;
-	    if (mWorkerThread.joinable()) 
-		{
-	        mWorkerThread.join();
-	    }
 	}
 }

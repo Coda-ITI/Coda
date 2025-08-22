@@ -18,10 +18,7 @@
 
 package android.vendor.coda;
 @VintfStability
-interface IObservationServiceIVIContract {
-  void registerSpeedReadingsCallback(android.vendor.coda.ISpeedReadings cb);
-  void registerRPMReadingsCallback(android.vendor.coda.IRPMReadings cb);
-  void registerUltrasonicReadingsCallback(android.vendor.coda.IUltrasonicReadings cb, int sensorIndex);
-  void registerDoorStateReadingsCallback(android.vendor.coda.IDoorStateReadings cb);
-  void changeSystemTheme(boolean isLightMode);
+parcelable DoorState {
+  int position;
+  boolean isOpen;
 }
