@@ -106,7 +106,7 @@ namespace aidl::android::vendor::coda::observation {
 	            if (mDoorStateCb != nullptr) mDoorStateCb->onDoorStateChanged(doorStates);
 	            if (mRPMValCb != nullptr) mRPMValCb->onRpmChanged(1500);
 	            if (mSpeedValCb != nullptr) mSpeedValCb->onSpeedChanged(80);
-	            if (mUltrasonicReadingCbs.empty()) 
+	            if (!mUltrasonicReadingCbs.empty()) 
 				{
 					for (uint32_t iter = 0; iter < mUltrasonicReadingCbs.size(); iter++)
 					{
