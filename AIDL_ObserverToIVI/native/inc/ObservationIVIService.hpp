@@ -1,12 +1,11 @@
 #pragma once
 
-#include <aidl/android/vendor/coda/BnObservationServiceIVIContract.h>
-#include <aidl/android/vendor/coda/DoorState.h>
-#include <aidl/android/vendor/coda/IObservationServiceIVIContract.h>
-#include <aidl/android/vendor/coda/IDoorStateReadings.h>
-#include <aidl/android/vendor/coda/IRPMReadings.h>
-#include <aidl/android/vendor/coda/ISpeedReadings.h>
-#include <aidl/android/vendor/coda/IUltrasonicReadings.h>
+#include <aidl/android/vendor/coda/observation/BnObservationServiceIVIContract.h>
+#include <aidl/android/vendor/coda/observation/IObservationServiceIVIContract.h>
+#include <aidl/android/vendor/coda/observation/IDoorStateReadings.h>
+#include <aidl/android/vendor/coda/observation/IRPMReadings.h>
+#include <aidl/android/vendor/coda/observation/ISpeedReadings.h>
+#include <aidl/android/vendor/coda/observation/IUltrasonicReadings.h>
 #include <android/binder_ibinder.h>
 #include <android/binder_manager.h>
 #include <android/binder_process.h>
@@ -23,8 +22,8 @@
 
 #define LOG_TAG "ServiceBinding"
 
-namespace aidl::android::vendor::coda {
-	class ObservationIVIContract : public aidl::android::vendor::coda::BnObservationServiceIVIContract
+namespace aidl::android::vendor::coda::observation {
+	class ObservationIVIContract : public aidl::android::vendor::coda::observation::BnObservationServiceIVIContract
 	{
 		private:
 			static constexpr int NUM_ULTRASONIC_SENSORS = 4;

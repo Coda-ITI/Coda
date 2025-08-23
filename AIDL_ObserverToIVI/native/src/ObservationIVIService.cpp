@@ -1,6 +1,6 @@
 #include "ObservationIVIService.hpp"
 
-namespace aidl::android::vendor::coda {
+namespace aidl::android::vendor::coda::observation {
 
 
 bool ObservationIVIContract::initSomeIP()
@@ -300,6 +300,7 @@ ObservationIVIContract::~ObservationIVIContract()
 ::ndk::ScopedAStatus ObservationIVIContract::changeSystemThemeToLight() 
 {
 	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Change theme to light has been called");
+
 	if(isSomeIpInit_)
 	{	
 		iviStub_->notifyThemeChange(v1::coda::vehicle::IVI::Theme::LIGHT);
@@ -310,6 +311,7 @@ ObservationIVIContract::~ObservationIVIContract()
 ::ndk::ScopedAStatus ObservationIVIContract::changeSystemThemeToDark() 
 {
 	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Change theme to dark has been called");
+	
 	if(isSomeIpInit_)
 	{	
 		iviStub_->notifyThemeChange(v1::coda::vehicle::IVI::Theme::DARK);
