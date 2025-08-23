@@ -7,8 +7,19 @@ import android.vendor.coda.observation.IUltrasonicReadings;
 
 interface IObservationServiceIVIContract {
     void registerSpeedReadingsCallback(ISpeedReadings cb);
+
     void registerRPMReadingsCallback(IRPMReadings cb);
-    void registerUltrasonicReadingsCallback(IUltrasonicReadings cb,int sensorIndex);
-    void registerDoorStateReadingsCallback(IDoorStateReadings cb);
-    void changeSystemTheme(boolean isLightMode);
+
+    void registerUltrasonic0ReadingsCallback(IUltrasonicReadings cb);
+    void registerUltrasonic1ReadingsCallback(IUltrasonicReadings cb);
+    void registerUltrasonic2ReadingsCallback(IUltrasonicReadings cb);
+    void registerUltrasonic3ReadingsCallback(IUltrasonicReadings cb);
+
+    void registerDoorStateFLReadingsCallback(IDoorStateReadings cb);
+    void registerDoorStateFRReadingsCallback(IDoorStateReadings cb);
+    void registerDoorStateRLReadingsCallback(IDoorStateReadings cb);
+    void registerDoorStateRRReadingsCallback(IDoorStateReadings cb);
+
+    void changeSystemThemeToLight();
+    void changeSystemThemeToDark();
 }

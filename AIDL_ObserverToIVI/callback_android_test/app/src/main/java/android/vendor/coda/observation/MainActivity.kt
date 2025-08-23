@@ -55,27 +55,59 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-            observation.registerUltrasonicReadingsCallback(object : IUltrasonicReadings.Stub() {
+            observation.registerUltrasonic0ReadingsCallback(object : IUltrasonicReadings.Stub() {
                 override fun onUltrasonicChanged(position: Int, reading: Float) {
                     Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
                 }
-            }, 0)
+            })
 
-            observation.registerDoorStateReadingsCallback(object : IDoorStateReadings.Stub() {
-                override fun onDoorStateChanged(doorStates: Array<out DoorState?>?) {
-                    doorStates?.forEachIndexed { index, doorState ->
-                        if (doorState != null) {
-                            Log.d(TAG, "Door $index -> position=${doorState.position}, isOpen=${doorState.isOpen}")
-                        } else {
-                            Log.d(TAG, "Door $index -> null")
-                        }
-                    }
+            observation.registerUltrasonic1ReadingsCallback(object : IUltrasonicReadings.Stub() {
+                override fun onUltrasonicChanged(position: Int, reading: Float) {
+                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
                 }
             })
+
+            observation.registerUltrasonic2ReadingsCallback(object : IUltrasonicReadings.Stub() {
+                override fun onUltrasonicChanged(position: Int, reading: Float) {
+                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+                }
+            })
+
+            observation.registerUltrasonic3ReadingsCallback(object : IUltrasonicReadings.Stub() {
+                override fun onUltrasonicChanged(position: Int, reading: Float) {
+                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+                }
+            })
+
+            observation.registerDoorStateFLReadingsCallback(object : IDoorStateReadings.Stub() {
+                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+                }
+            })
+
+            observation.registerDoorStateFRReadingsCallback(object : IDoorStateReadings.Stub() {
+                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+                }
+            })
+
+            observation.registerDoorStateRLReadingsCallback(object : IDoorStateReadings.Stub() {
+                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+                }
+            })
+
+            observation.registerDoorStateRRReadingsCallback(object : IDoorStateReadings.Stub() {
+                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+                }
+            })
+
+            observation.changeSystemThemeToDark()
+            observation.changeSystemThemeToLight()
+
         } else {
             Log.e(TAG, "observation is null")
         }
-
-        observation.changeSystemTheme(true)
     }
 }

@@ -1,0 +1,21 @@
+cc_library_shared {
+    name: "android.vendor.coda-manually-generated-V1-ndk",
+    srcs: [
+        "android/vendor/coda/*.cpp",
+    ],
+    rtti: true,
+    cppflags: [
+        "-fexceptions",
+        "-frtti",
+    ],
+    shared_libs: [
+        "libc++",
+        "liblog",
+        "libbinder_ndk",
+        "libbinder",
+        "libutils",
+        "libbase",
+        "libutils",
+    ],
+    export_include_dirs: ["include"],
+}
