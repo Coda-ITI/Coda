@@ -1,0 +1,140 @@
+{
+  "unicast": "192.168.1.4",
+  "logging": {
+    "level": "debug",
+    "console": "true",
+    "file": {
+      "enable": "true",
+      "path": "/var/log/vsomeip.log"
+    }
+  },
+  "applications": [
+    {
+      "name": "IVIApp",
+      "id": "0x127A"
+    }
+  ],
+  "services": [
+    {
+      "service": "0x1235",
+      "instance": "0x5679",
+      "unreliable":  "30498",
+      "reliable": {
+        "port": "30497",
+        "enable-magic-cookies": "false"
+      },
+      "eventgroups": [
+        {
+          "id": "7001",
+          "reliable": false
+        },
+        {
+          "id": "7003",
+          "reliable": false
+        },
+        {
+          "id": "7004",
+          "reliable": false            
+        },
+        {
+          "id": "7005",
+          "reliable": false            
+        }
+      ],
+      "events": [
+        {
+          "id": "38001",
+          "eventgroup": "7001"
+        },
+        {
+          "id": "38002",
+          "eventgroup": "7001"
+        },
+        {
+          "id": "38003",
+          "eventgroup": "7001"
+        },
+        {
+          "id": "38004",
+          "eventgroup": "7001"
+        },
+        {
+          "id": "38005",
+          "eventgroup": "7001"
+        },
+        {
+          "id": "38010",
+          "eventgroup": "7003"
+        },
+        {
+          "id": "38011",
+          "eventgroup": "7003"
+        },
+        {
+          "id": "38012",
+          "eventgroup": "7003"
+        },
+        {
+          "id": "38013",
+          "eventgroup": "7003"
+        },
+        {
+          "id": "38014",
+          "eventgroup": "7003"
+        },
+        {
+          "id": "38015",
+          "eventgroup": "7004"
+        },
+        {
+          "id": "38016",
+          "eventgroup": "7004"
+        },
+        {
+          "id": "38018",
+          "eventgroup": "7004"
+        },
+        {
+          "id": "38017",
+          "eventgroup": "7005"            
+        }
+      ]
+    },
+    {
+      "service": "0x1236",
+      "instance": "0x567A",
+      "unreliable":  "30496",
+      "reliable": {
+        "port": "30495",
+        "enable-magic-cookies": "false"
+      },
+    "eventgroups": [
+        {
+        "id": "7006",
+        "reliable": false
+        }
+    ],
+    "events": [
+        {
+        "id": "38022",
+        "eventgroup": "7006"
+        }
+    ]
+    }
+  ],
+  "routing": "IVIApp",
+  "service-discovery": {
+    "enable": true,
+    "protocol": "udp",
+    "multicast": "224.224.224.245",
+    "port": "30490",
+    "initial_delay_min": 10,
+    "initial_delay_max": 100,
+    "repetitions_base_delay": 200,
+    "repetitions_max": 3,
+    "ttl": 3,
+    "cyclic_offer_delay": 2000,
+    "request_response_delay": 1500,
+    "offer_debounce": 1000
+  }
+}

@@ -5,9 +5,6 @@ aidl_interface {
         "android/vendor/coda/*.aidl",
     ],
     backend: {
-        java: {
-            enabled: true,
-        },
         ndk: {
             enabled: true,
         },
@@ -22,3 +19,4 @@ aidl_interface {
     ],
 
 }
+

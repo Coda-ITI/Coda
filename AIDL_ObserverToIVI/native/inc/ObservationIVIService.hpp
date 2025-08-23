@@ -24,27 +24,30 @@
 #define LOG_TAG "ServiceBinding"
 
 namespace aidl::android::vendor::coda {
-class ObservationIVIContract : public aidl::android::vendor::coda::BnObservationServiceIVIContract,public v1::coda::vehicle::IVIStubImpl {
+class ObservationIVIContract : public aidl::android::vendor::coda::BnObservationServiceIVIContract
+{
 	private:
+
+	static constexpr int NUM_ULTRASONIC_SENSORS = 4;
+
 	std::shared_ptr<IDoorStateReadings> mDoorStateCb;
 	std::shared_ptr<IRPMReadings> mRPMValCb;
 	std::shared_ptr<ISpeedReadings> mSpeedValCb;
-	std::array<std::shared_ptr<IUltrasonicReadings>> mUltrasonicReadingCbs;
+	std::array<std::shared_ptr<IUltrasonicReadings>,NUM_ULTRASONIC_SENSORS> mUltrasonicReadingCbs;
 	
-	std::shared_ptr<v1::coda::vehicle::PerceptionProxyDefault> perceptionProxy;
-	std::shared_ptr<v1::coda::vehicle::IVIStubImpl> iviStub;
+	std::shared_ptr<v1::coda::vehicle::PerceptionProxyDefault> perceptionProxy_;
+	std::shared_ptr<v1::coda::vehicle::IVIStubImpl> iviStub_;
 
 	CommonAPI::Event<uint16_t>::Subscription speedSubscription_;
     CommonAPI::Event<uint16_t>::Subscription rpmSubscription_;
-    CommonAPI::Event<std::vector<v1::vehicle::coda::Perception::S_DoorState>::Subscription multiDoorSubscription_;
-	std::vector<CommonAPI::Event<float>::Subscription> ultrasonicSubscriptions_;
+	CommonAPI::Event<std::vector<v1::coda::vehicle::Perception::S_DoorState>>::Subscription multiDoorSubscription_;
+	std::array<CommonAPI::Event<float>::Subscription,NUM_ULTRASONIC_SENSORS> ultrasonicSubscriptions_;
 	
 	std::atomic<bool> isSomeIpInit_{false};
 
 	void handleSpeedChange(const uint16_t& speed);
 	void handleRPMChange(const uint16_t& rpm);
-	void handleDoorStateChange(const std::vector<Perception::S_DoorState>& doorStates);
-	void handleUltrasonicChange(const std::vector<Perception::S_UltrasonicState>& ultrasonicStates);
+	void handleDoorStateChange(const std::vector<v1::coda::vehicle::Perception::S_DoorState>& doorStates);
 
 	public:
 	ObservationIVIContract();

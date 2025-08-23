@@ -1,0 +1,9 @@
+service static_ip_setup /system/bin/static_ip_setup
+    class main
+    user root
+    group root
+    seclabel u:r:init:s0
+    oneshot
+
+on property:static_ip_done=1:
+    start static_ip_setup

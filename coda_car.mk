@@ -1,4 +1,15 @@
-PRODUCT_PACKAGES += libambientlight ObservationServiceApp observerService
+PRODUCT_PACKAGES += \
+	libcommonapi \
+ 	libcommonapi_someip \
+  	libvsomeip3 \
+	libvsomeip3-cfg \
+	libvsomeip3-e2e \
+	libvsomeip3-sd \
+ 	libambientlight \
+	observerService \
+	observation-vsomeip.json \
+	static_ip_setup
+
 
 PRODUCT_COPY_FILES += \
 		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc 

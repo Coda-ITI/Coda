@@ -14,6 +14,9 @@ public:
     // Helper methods to trigger events
     void notifyThemeChange(const IVI::Theme &theme);
 
+    void setCurrentTheme(IVI::Theme theme) { currentTheme_ = theme; }
+    IVI::Theme getCurrentTheme() const { return currentTheme_; }
+
     // Method overrides
     virtual void requestTheme(const std::shared_ptr<CommonAPI::ClientId> _client, requestThemeReply_t _reply) override;
     virtual void changeTheme(const std::shared_ptr<CommonAPI::ClientId> _client, IVI::Theme _theme, changeThemeReply_t _reply) override;
