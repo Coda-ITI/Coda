@@ -6,7 +6,6 @@
 #include <aidl/android/vendor/coda/observation/IRPMReadings.h>
 #include <aidl/android/vendor/coda/observation/ISpeedReadings.h>
 #include <aidl/android/vendor/coda/observation/IUltrasonicReadings.h>
-#include <aidl/android/vendor/coda/observation/DoorState.h>
 #include <android/binder_ibinder.h>
 #include <android/binder_manager.h>
 #include <android/binder_process.h>
@@ -20,13 +19,25 @@
 
 #define LOG_TAG "ServiceBinding"
 
+constexpr uint32_t FRONT_LEFT_DOOR = 0;
+constexpr uint32_t FRONT_RIGHT_DOOR = 1;
+constexpr uint32_t REAR_LEFT_DOOR = 2;
+constexpr uint32_t REAR_RIGHT_DOOR = 3;
+constexpr uint32_t NUM_OF_DOORS = 4;
+
+constexpr uint32_t ULTRASONIC_0 = 0;
+constexpr uint32_t ULTRASONIC_1 = 1;
+constexpr uint32_t ULTRASONIC_2 = 2;
+constexpr uint32_t ULTRASONIC_3 = 3;
+constexpr uint32_t NUM_OF_ULTRASONICS = 4;
+
 namespace aidl::android::vendor::coda::observation {
 	class ObservationIVIContract : public aidl::android::vendor::coda::observation::BnObservationServiceIVIContract {
 		private:
-    		std::shared_ptr<IDoorStateReadings> mDoorStateCb;
+			std::vector<std::shared_ptr<IDoorStateReadings>> mDoorStateCbs{NUM_OF_DOORS};
     		std::shared_ptr<IRPMReadings> mRPMValCb;
     		std::shared_ptr<ISpeedReadings> mSpeedValCb;
-			std::vector<std::shared_ptr<IUltrasonicReadings>> mUltrasonicReadingCbs{4};
+			std::vector<std::shared_ptr<IUltrasonicReadings>> mUltrasonicReadingCbs{NUM_OF_ULTRASONICS};
 			std::atomic<bool> mRunning{false};
 			std::thread mWorkerThread;
 		
@@ -35,10 +46,16 @@ namespace aidl::android::vendor::coda::observation {
 			~ObservationIVIContract();
 			::ndk::ScopedAStatus registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::ISpeedReadings>& in_cb) override;
   			::ndk::ScopedAStatus registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IRPMReadings>& in_cb) override;
-  			::ndk::ScopedAStatus registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb, int32_t in_sensorIndex) override;
-  			::ndk::ScopedAStatus registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) override;
-  			::ndk::ScopedAStatus changeSystemTheme(bool in_isLightMode) override;
-			void startCallbackThread();
-			void stopCallbackThread();
+  			::ndk::ScopedAStatus registerUltrasonic0ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerUltrasonic1ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerUltrasonic2ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerUltrasonic3ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerDoorStateFLReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerDoorStateFRReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerDoorStateRLReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) override;
+  			::ndk::ScopedAStatus registerDoorStateRRReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) override;
+  			::ndk::ScopedAStatus changeSystemThemeToLight() override;
+  			::ndk::ScopedAStatus changeSystemThemeToDark() override;
+  			void stopCallbackThread();
 	};
 }

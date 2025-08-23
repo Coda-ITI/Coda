@@ -63,8 +63,13 @@ class MainActivity : AppCompatActivity() {
 
             observation.registerDoorStateReadingsCallback(object : IDoorStateReadings.Stub() {
                 override fun onDoorStateChanged(doorStates: Array<out DoorState?>?) {
-
-                    Log.d(TAG, "DoorCallback: Received positions and states: $doorStates")
+                    doorStates?.forEachIndexed { index, doorState ->
+                        if (doorState != null) {
+                            Log.d(TAG, "Door $index -> position=${doorState.position}, isOpen=${doorState.isOpen}")
+                        } else {
+                            Log.d(TAG, "Door $index -> null")
+                        }
+                    }
                 }
             })
         } else {

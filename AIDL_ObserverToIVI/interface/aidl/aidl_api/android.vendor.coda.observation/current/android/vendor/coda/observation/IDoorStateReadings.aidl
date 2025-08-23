@@ -18,5 +18,5 @@
 
 package android.vendor.coda.observation;
 interface IDoorStateReadings {
-  void onDoorStateChanged(in android.vendor.coda.observation.DoorState[] doorStates);
+  void onDoorStateChanged(int position, boolean isOpen);
 }

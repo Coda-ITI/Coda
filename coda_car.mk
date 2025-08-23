@@ -1,4 +1,4 @@
-PRODUCT_PACKAGES += libambientlight ObservationServiceApp 
+PRODUCT_PACKAGES += libambientlight ObservationServiceApp observer_service 
 
 PRODUCT_COPY_FILES += \
 		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc 

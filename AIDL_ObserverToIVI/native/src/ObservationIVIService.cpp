@@ -6,11 +6,13 @@ namespace aidl::android::vendor::coda::observation {
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Constructed");
 		startCallbackThread();
 	}
+
 	ObservationIVIContract::~ObservationIVIContract()
 	{
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service Object Destroyed");
 		stopCallbackThread();
 	}
+
 	::ndk::ScopedAStatus ObservationIVIContract::registerSpeedReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::ISpeedReadings>& in_cb) 
 	{
 		if (in_cb != nullptr)
@@ -25,7 +27,7 @@ namespace aidl::android::vendor::coda::observation {
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IRPMReadings>& in_cb) 
+  	::ndk::ScopedAStatus ObservationIVIContract::registerRPMReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IRPMReadings>& in_cb) 
 	{
 		if (in_cb != nullptr)
 		{
@@ -39,33 +41,67 @@ namespace aidl::android::vendor::coda::observation {
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonicReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb, int32_t in_sensorIndex) 
+  	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonic0ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) 
 	{
-		
 		if (in_cb != nullptr)
 		{
-			if (in_sensorIndex < 4)
-			{
-				this->mUltrasonicReadingCbs[in_sensorIndex] = in_cb;
-				__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic callback registered successfully");
-			}
-			else 
-			{
-				__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic callback invalid index");
-			}
+			this->mUltrasonicReadingCbs[ULTRASONIC_0] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 0 callback registered successfully");
 		}
 		else 
 		{
-			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic callback pointer is null");
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic 0 callback pointer is null");
 		}
 		return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
+  	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonic1ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) 
 	{
 		if (in_cb != nullptr)
 		{
-			this->mDoorStateCb = in_cb;
+			this->mUltrasonicReadingCbs[ULTRASONIC_1] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 1 callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic 1 callback pointer is null");
+		}
+		return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonic2ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) 
+	{
+		if (in_cb != nullptr)
+		{
+			this->mUltrasonicReadingCbs[ULTRASONIC_2] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 2 callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic 2 callback pointer is null");
+		}
+		return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::registerUltrasonic3ReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IUltrasonicReadings>& in_cb) 
+	{
+		if (in_cb != nullptr)
+		{
+			this->mUltrasonicReadingCbs[ULTRASONIC_3] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 3 callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "ultrasonic 3 callback pointer is null");
+		}
+		return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateFLReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
+	{
+		if (in_cb != nullptr)
+		{
+			this->mDoorStateCbs[FRONT_LEFT_DOOR] = in_cb;
 			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
 		}
 		else 
@@ -75,9 +111,58 @@ namespace aidl::android::vendor::coda::observation {
 	    return ::ndk::ScopedAStatus::ok();
 	}
 
-	::ndk::ScopedAStatus ObservationIVIContract::changeSystemTheme(bool in_isLightMode) 
+  	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateFRReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
 	{
-		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "received a flag of value %d to change the system them");
+		if (in_cb != nullptr)
+		{
+			this->mDoorStateCbs[FRONT_RIGHT_DOOR] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "door callback pointer is null");
+		}
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateRLReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
+	{
+		if (in_cb != nullptr)
+		{
+			this->mDoorStateCbs[REAR_LEFT_DOOR] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "door callback pointer is null");
+		}
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::registerDoorStateRRReadingsCallback(const std::shared_ptr<::aidl::android::vendor::coda::observation::IDoorStateReadings>& in_cb) 
+	{
+		if (in_cb != nullptr)
+		{
+			this->mDoorStateCbs[REAR_RIGHT_DOOR] = in_cb;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "door callback registered successfully");
+		}
+		else 
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "door callback pointer is null");
+		}
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::changeSystemThemeToLight() 
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Change theme to light has been called");
+		// notify->changeTheme() /** using IVI stub */
+	    return ::ndk::ScopedAStatus::ok();
+	}
+
+  	::ndk::ScopedAStatus ObservationIVIContract::changeSystemThemeToDark() 
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Change theme to dark has been called");
 		// notify->changeTheme() /** using IVI stub */
 	    return ::ndk::ScopedAStatus::ok();
 	}
@@ -85,20 +170,8 @@ namespace aidl::android::vendor::coda::observation {
 	void ObservationIVIContract::startCallbackThread() 
 	{
 	    mRunning = true;
-		std::vector<DoorState> doorStates = {
-			{.isOpen = true, .position = 0},
-			{.isOpen = false, .position = 1},
-			{.isOpen = true, .position = 2},
-			{.isOpen = false, .position = 3},
-		};
-		std::unordered_map<int, float> ultrasonicReadings = {
-			{0, 1.2},
-			{1, 2.4},
-			{2, 3.6},
-			{3, 4.8},
-		};
 
-	    mWorkerThread = std::thread([&, this]() {
+	    mWorkerThread = std::thread([this]() {
 	        while (mRunning) 
 			{
 	            std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -106,14 +179,16 @@ namespace aidl::android::vendor::coda::observation {
 	            if (mDoorStateCb != nullptr) mDoorStateCb->onDoorStateChanged(doorStates);
 	            if (mRPMValCb != nullptr) mRPMValCb->onRpmChanged(1500);
 	            if (mSpeedValCb != nullptr) mSpeedValCb->onSpeedChanged(80);
-	            if (!mUltrasonicReadingCbs.empty()) 
+				for (uint32_t iter = FRONT_LEFT_DOOR; iter < NUM_OF_DOORS; iter++)
 				{
-					for (uint32_t iter = 0; iter < mUltrasonicReadingCbs.size(); iter++)
-					{
-						if (mUltrasonicReadingCbs[iter] != nullptr)
-							mUltrasonicReadingCbs[iter]->onUltrasonicChanged(iter, ultrasonicReadings[iter]);
-					}
-				} 
+					if (mDoorStateCbs[iter] != nullptr)
+						mDoorStateCbs[iter]->onDoorStateChanged(iter, true);
+				}
+				for (uint32_t iter = ULTRASONIC_0; iter < NUM_OF_ULTRASONICS; iter++)
+				{
+					if (mUltrasonicReadingCbs[iter] != nullptr)
+						mUltrasonicReadingCbs[iter]->onUltrasonicChanged(iter, 1.2 * iter);
+				}
 	        }
 	    });
 	}
