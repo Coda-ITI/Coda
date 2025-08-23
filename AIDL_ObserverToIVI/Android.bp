@@ -1,7 +1,26 @@
+prebuilt_etc {
+    name: "observation-vsomeip.json",
+    sub_dir: "vsomeip",
+    src: "observation-vsomeip.json",
+}
+
 cc_binary {
-    name: "observer_service",
-    include_dirs: ["vendor/Coda/AIDL_ObserverToIVI/native/inc"],
-    srcs: ["native/src/*.cpp",],
+    name: "observerService",
+    include_dirs: [
+        "vendor/Coda/AIDL_ObserverToIVI/native/inc",
+        "vendor/Coda/AIDL_ObserverToIVI/native/src-gen/ivi_src-gen/src-gen",
+        "vendor/Coda/AIDL_ObserverToIVI/native/src-gen/perception_src-gen/src-gen",
+    ],
+    srcs: [
+        "native/src/*.cpp",
+        "native/src-gen/ivi_src-gen/src-gen/v1/coda/vehicle/*.cpp",
+        "native/src-gen/perception_src-gen/src-gen/v1/coda/vehicle/*.cpp"
+    ],
+    rtti: true,
+    cppflags: [
+        "-fexceptions",
+        "-frtti",       
+    ],
     shared_libs: [
         "libc++",
         "liblog",
@@ -10,9 +29,14 @@ cc_binary {
         "libutils",
         "libbase",
         "libutils",
-        "android.vendor.coda.observation-V1-ndk",
+        "android.vendor.coda-manually-generated-V1-ndk",
+        "libvsomeip3",
+        "libvsomeip3-cfg",
+        "libvsomeip3-e2e",
+        "libvsomeip3-sd",
+        "libcommonapi",
+        "libcommonapi_someip",
     ],
     ldflags: ["-u","-main"],
-    vendor_available: true,
-    init_rc: ["init.observer_service.rc",],
+    init_rc: ["init.observerService.rc"]
 }

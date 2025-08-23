@@ -1,7 +1,7 @@
 cc_library_shared {
     name: "android.vendor.coda-manually-generated-V1-ndk",
     srcs: [
-        "android/vendor/coda/*.cpp",
+        "android/vendor/coda/observation/*.cpp",
     ],
     rtti: true,
     cppflags: [

@@ -1,0 +1,23 @@
+type observerService, domain;
+type observerService_exec, exec_type, file_type, vendor_file_type;
+type observerService_api, service_manager_type;
+
+
+allow observerService observerService_api:service_manager add;
+allow observerService servicemanager:binder { call transfer };
+allow init observerService_exec:file { getattr open read execute map };
+
+init_daemon_domain(observerService);
+
+allow observerService self:socket { create connect read write };
+allow observerService self:tcp_socket { create connect read write bind accept listen };
+allow observerService self:udp_socket { create connect read write bind };
+
+allow observerService port:tcp_socket { name_bind name_connect };
+allow observerService port:udp_socket { name_bind };
+
+allow observerService netif:rawip_socket { create getopt setopt };
+allow observerService netif:packet_socket { create read write };
+
+allow observerService self:netlink_route_socket { create bind shutdown nlmsg_read nlmsg_readpriv read write };
+
