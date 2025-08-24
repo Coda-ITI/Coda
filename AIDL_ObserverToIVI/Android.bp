@@ -5,7 +5,7 @@ prebuilt_etc {
 }
 
 cc_binary {
-    name: "observerService",
+    name: "observer_service",
     include_dirs: [
         "vendor/Coda/AIDL_ObserverToIVI/native/inc",
         "vendor/Coda/AIDL_ObserverToIVI/native/src-gen/ivi_src-gen/src-gen",
@@ -29,7 +29,7 @@ cc_binary {
         "libutils",
         "libbase",
         "libutils",
-        "android.vendor.coda-manually-generated-V1-ndk",
+        "android.vendor.coda.observation-manually-generated-V1-ndk",
         "libvsomeip3",
         "libvsomeip3-cfg",
         "libvsomeip3-e2e",

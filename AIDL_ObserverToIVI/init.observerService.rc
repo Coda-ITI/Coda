@@ -1,11 +1,11 @@
 on boot
-    start observerService
+    start observer_service
 
 
-service observerService /system/bin/observerService
+service observer_service /system/bin/observer_service
     setenv LD_LIBRARY_PATH /system/lib:/system/lib64:/vendor/lib:/vendor/lib64
     setenv VSOMEIP_CONFIGURATION /system/etc/vsomeip/observation-vsomeip.json
     class late_start
     user root
     group root
-    seclabel u:object_r:observerService_exec:s0
+    seclabel u:object_r:observer_service_exec:s0

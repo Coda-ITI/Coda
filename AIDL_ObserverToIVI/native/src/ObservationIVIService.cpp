@@ -189,7 +189,7 @@ ObservationIVIContract::~ObservationIVIContract()
 {
 	if (in_cb != nullptr)
 	{
-		this->mUltrasonicReadingCbs[ULTRASONIC_0] = in_cb;
+		this->mUltrasonicReadingCbs[ULTRASONIC_1] = in_cb;
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 0 callback registered successfully");
 	}
 	else 
@@ -203,7 +203,7 @@ ObservationIVIContract::~ObservationIVIContract()
 {
 	if (in_cb != nullptr)
 	{
-		this->mUltrasonicReadingCbs[ULTRASONIC_1] = in_cb;
+		this->mUltrasonicReadingCbs[ULTRASONIC_2] = in_cb;
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 1 callback registered successfully");
 	}
 	else 
@@ -217,7 +217,7 @@ ObservationIVIContract::~ObservationIVIContract()
 {
 	if (in_cb != nullptr)
 	{
-		this->mUltrasonicReadingCbs[ULTRASONIC_2] = in_cb;
+		this->mUltrasonicReadingCbs[ULTRASONIC_3] = in_cb;
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 2 callback registered successfully");
 	}
 	else 
@@ -231,7 +231,7 @@ ObservationIVIContract::~ObservationIVIContract()
 {
 	if (in_cb != nullptr)
 	{
-		this->mUltrasonicReadingCbs[ULTRASONIC_3] = in_cb;
+		this->mUltrasonicReadingCbs[ULTRASONIC_4] = in_cb;
 		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "ultrasonic 3 callback registered successfully");
 	}
 	else 
