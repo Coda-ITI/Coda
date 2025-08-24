@@ -23,11 +23,11 @@ int main()
     {
         __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service registered successfully.");
         observation->initSomeIP();
-        while (true)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "hello from coda service!!!.");
-        }        
+        // while (true)
+        // {
+        //     std::this_thread::sleep_for(std::chrono::seconds(1));
+        //     __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "hello from coda service!!!.");
+        // }        
     } 
     else 
     {
