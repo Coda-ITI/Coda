@@ -1,29 +1,16 @@
 PRODUCT_PACKAGES += libambientlight ObservationServiceApp observer_service 
 
 PRODUCT_COPY_FILES += \
-		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc 
+		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc \
+		vendor/Coda/evs_config/evs_configuration_override.xml:$(TARGET_COPY_OUT_VENDOR)/etc/automotive/evs/evs_configuration_override.xml \
 
 BOARD_SEPOLICY_DIRS += vendor/Coda/AIDL_ObserverToIVI/sepolicy 
-		
 		
 #DEVICE_MANIFEST_FILE += vendor/Coda/AIDL_ObserverToIVI/FrameworkCompatibilityMatrix/observer_service.xml
 
 #DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += vendor/Coda/AIDL_ObserverToIVI/FrameworkCompatibilityMatrix/observer_service.xml
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-#		vendor/Coda/evs_config/evs_configuration_override.xml:$(TARGET_COPY_OUT_VENDOR)/etc/automotive/evs/evs_configuration_override.xml \
+			
+#		
 	        #vendor/Coda/static_ip/init.staticip.rc:root/init.staticip.rc \
 		
 #PRODUCT_PACKAGES += \

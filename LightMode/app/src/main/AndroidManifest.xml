@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="android.vendor.coda.observation.lightmode">
+    <application android:hasCode="false" />
+    <overlay
+        android:targetPackage="android.vendor.coda.observation"
+        android:targetName="IVI"
+        android:isStatic="false"
+        android:priority="100" />
+</manifest>
