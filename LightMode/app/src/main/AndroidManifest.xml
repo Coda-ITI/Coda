@@ -4,7 +4,7 @@
     <application android:hasCode="false" />
     <overlay
         android:targetPackage="android.vendor.coda.observation"
-        android:targetName="IVI"
+        android:targetName="Coda-IVI"
         android:isStatic="false"
         android:priority="100" />
 </manifest>

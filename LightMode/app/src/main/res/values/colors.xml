@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#F0F0F0</color>
     <color name="purple">#673AB7</color>
     <color name="light_purple">#BB86FC</color>
     <color name="luxoft_purple">#5e278c</color>
@@ -15,6 +15,11 @@
     <color name="triangles_color">#FFFFFFFF</color>
     <color name="speed_unit_text_color">#A47CC4</color>
     <color name="speed_marks_color">#333333</color>
+
+
+     <color name="textColor">#FF000000</color>
+     <color name="gaugeBG">#FFFFFFFF</color>
+     <color name="backgroundColor">#FFF0F0F0</color>
 </resources>
 
 
