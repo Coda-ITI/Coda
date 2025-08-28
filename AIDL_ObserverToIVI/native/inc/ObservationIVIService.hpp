@@ -19,6 +19,10 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <mutex>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define LOG_TAG "ServiceBinding"
 
@@ -58,6 +62,13 @@ namespace aidl::android::vendor::coda::observation {
 			void handleSpeedChange(const uint16_t& speed);
 			void handleRPMChange(const uint16_t& rpm);
 			void handleDoorStateChange(const std::vector<v1::coda::vehicle::Perception::S_DoorState>& doorStates);
+
+			void startEvsApp();
+			void stopEvsApp();
+			
+			pid_t evsAppPid_ = -1;
+			std::mutex evsAppMutex_;
+			bool isEvsAppRunning_ = false;
 
 		public:
 			ObservationIVIContract();
