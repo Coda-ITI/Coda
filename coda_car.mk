@@ -1,4 +1,4 @@
-PRODUCT_PACKAGES += libambientlight ObservationServiceApp observer_service CodaIVILightMode 
+PRODUCT_PACKAGES += libambientlight observer_service observation-vsomeip.json net_static_ip.sh CodaIVILightMode ObservationServiceApp
 
 PRODUCT_COPY_FILES += \
 		vendor/Coda/init_hw/init.codahw.rc:root/init.codahw.rc \

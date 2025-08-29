@@ -1,6 +1,16 @@
-on boot
-    exec -- /system/bin/ip addr add 192.168.1.7/24 dev eth0
-    exec -- /system/bin/ip link set eth0 up
-    exec -- /system/bin/sleep 1
-    exec -- /system/bin/ip route add default via 192.168.1.1 dev eth0
+service net_static_ip /system/bin/net_static_ip.sh
+    class main
+    user root
+    group root
+    oneshot
+    seclabel u:r:init:s0
 
+on property:sys.boot_completed=1
+    exec_start /system/bin/log -t net-init "Waiting for eth0..."
+    wait /sys/class/net/eth0
+    exec_start /system/bin/ip link set dev eth0 up
+    exec_start /system/bin/ip addr flush dev eth0
+    exec_start /system/bin/ip addr add 192.168.1.4/24 dev eth0
+    exec_start /system/bin/ip route add 224.224.224.245 dev eth0
+
+    setprop static_ip.done 1

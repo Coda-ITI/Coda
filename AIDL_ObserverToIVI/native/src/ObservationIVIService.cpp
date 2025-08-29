@@ -60,7 +60,9 @@ bool ObservationIVIContract::initSomeIP()
 	
 	// subscribe to Perception events
 	speedSubscription_ = perceptionProxy_->getNotifySpeedEvent().subscribe(
-		[this](const uint16_t& speed) {
+		[this](const uint16_t& speed) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Speed Notification: %d", static_cast<int>(speed));
 			if (mSpeedValCb != nullptr) 
 			{
 				mSpeedValCb->onSpeedChanged(speed);
@@ -69,7 +71,9 @@ bool ObservationIVIContract::initSomeIP()
 	);
 	
 	rpmSubscription_ = perceptionProxy_->getNotifyRPMEvent().subscribe(
-		[this](const uint16_t& rpm) {
+		[this](const uint16_t& rpm) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "RPM Notification: %d", static_cast<int>(rpm));
 			if (mRPMValCb != nullptr) 
 			{
 				mRPMValCb->onRpmChanged(rpm);
@@ -78,7 +82,9 @@ bool ObservationIVIContract::initSomeIP()
 	);
 	
 	multiDoorSubscription_ = perceptionProxy_->getMultiDoorNotifyEvent().subscribe(
-		[this](const std::vector<v1::coda::vehicle::Perception::S_DoorState>& doorStates) {			
+		[this](const std::vector<v1::coda::vehicle::Perception::S_DoorState>& doorStates) 
+		{			
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Door State Notification Received");
 			for (uint32_t iter = FRONT_LEFT_DOOR; iter < NUM_OF_DOORS; iter++)
 			{
 				if (mDoorStateCbs[iter] != nullptr)
@@ -88,7 +94,9 @@ bool ObservationIVIContract::initSomeIP()
 	);
 
 	ultrasonicSubscriptions_[0] = perceptionProxy_->getNotifyUltrasonic_1Event().subscribe(
-		[this](const float& ultrasonic_1) {
+		[this](const float& ultrasonic_1) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 1 Notification: %f", static_cast<float>(ultrasonic_1));
 			if (mUltrasonicReadingCbs[ULTRASONIC_1] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_1]->onUltrasonicChanged(ULTRASONIC_1, ultrasonic_1);
@@ -97,7 +105,9 @@ bool ObservationIVIContract::initSomeIP()
 	);
 
 	ultrasonicSubscriptions_[1] = perceptionProxy_->getNotifyUltrasonic_2Event().subscribe(
-		[this](const float& ultrasonic_2) {
+		[this](const float& ultrasonic_2) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 2 Notification: %f", static_cast<float>(ultrasonic_2));
 			if (mUltrasonicReadingCbs[ULTRASONIC_2] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_2]->onUltrasonicChanged(ULTRASONIC_2, ultrasonic_2);
@@ -106,7 +116,9 @@ bool ObservationIVIContract::initSomeIP()
 	);
 
 	ultrasonicSubscriptions_[2] = perceptionProxy_->getNotifyUltrasonic_3Event().subscribe(
-		[this](const float& ultrasonic_3) {
+		[this](const float& ultrasonic_3) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 3 Notification: %f", static_cast<float>(ultrasonic_3));
 			if (mUltrasonicReadingCbs[ULTRASONIC_3] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_3]->onUltrasonicChanged(ULTRASONIC_3, ultrasonic_3);
@@ -115,13 +127,34 @@ bool ObservationIVIContract::initSomeIP()
 	);
 
 	ultrasonicSubscriptions_[3] = perceptionProxy_->getNotifyUltrasonic_4Event().subscribe(
-		[this](const float& ultrasonic_4) {
+		[this](const float& ultrasonic_4) 
+		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 4 Notification: %f", static_cast<float>(ultrasonic_4));
 			if (mUltrasonicReadingCbs[ULTRASONIC_4] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_4]->onUltrasonicChanged(ULTRASONIC_4, ultrasonic_4);
 			}
 		}
 	);
+
+perceptionProxy_->getNotifyGearStateEvent().subscribe(
+    [this](const v1::coda::vehicle::Perception::GearState& gearState) {
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Gear State Notification: %d", static_cast<int>(gearState));
+        bool isEvsAppRunning = false;
+        {
+            std::lock_guard<std::mutex> lock(evsAppMutex_);
+            isEvsAppRunning = isEvsAppRunning_;
+        }
+        if (gearState == v1::coda::vehicle::Perception::GearState::REVERSE) {
+            if (!isEvsAppRunning) {
+                startEvsApp();
+            }
+        } 
+        else if (isEvsAppRunning) {
+            stopEvsApp();
+        }
+    }
+);
 	
 
 	
@@ -318,5 +351,55 @@ ObservationIVIContract::~ObservationIVIContract()
 	}
 	return ::ndk::ScopedAStatus::ok();
 }
+
+void ObservationIVIContract::startEvsApp()
+{
+	pid_t pid = fork();
+	if (pid == 0)
+	{
+        execlp("evs_app", "evs_app", "--test", "--gear", "reverse", (char*)nullptr);
+		_exit(1);
+	}
+	
+	{
+		std::lock_guard<std::mutex> lock(evsAppMutex_);
+		if (pid > 0)
+		{
+			evsAppPid_ = pid;
+			isEvsAppRunning_ = true;
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "EVS app started with PID: %d", evsAppPid_);
+		}
+		else
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Failed to start EVS app");
+		}
+	}
+}
+
+void ObservationIVIContract::stopEvsApp()
+{
+	std::lock_guard<std::mutex> lock(evsAppMutex_);
+	if (isEvsAppRunning_ && evsAppPid_ > 0)
+	{
+		if (kill(evsAppPid_, SIGTERM) == 0)
+		{
+			int status;
+			waitpid(evsAppPid_, &status, 0);
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "EVS app with PID %d terminated", evsAppPid_);
+		}
+		else
+		{
+			__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Failed to terminate EVS app with PID %d", evsAppPid_);
+		}
+		evsAppPid_ = -1;
+		isEvsAppRunning_ = false;
+	}
+	else
+	{
+		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "EVS app is not running");
+	}
+}
+
+
 }
 
