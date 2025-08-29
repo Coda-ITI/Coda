@@ -1,4 +1,4 @@
-on boot
+on property:static_ip.done=1
     start observer_service
 
 

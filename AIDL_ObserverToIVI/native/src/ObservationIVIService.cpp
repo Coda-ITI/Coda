@@ -62,6 +62,7 @@ bool ObservationIVIContract::initSomeIP()
 	speedSubscription_ = perceptionProxy_->getNotifySpeedEvent().subscribe(
 		[this](const uint16_t& speed) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Speed Notification: %d", static_cast<int>(speed));
 			if (mSpeedValCb != nullptr) 
 			{
 				mSpeedValCb->onSpeedChanged(speed);
@@ -72,6 +73,7 @@ bool ObservationIVIContract::initSomeIP()
 	rpmSubscription_ = perceptionProxy_->getNotifyRPMEvent().subscribe(
 		[this](const uint16_t& rpm) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "RPM Notification: %d", static_cast<int>(rpm));
 			if (mRPMValCb != nullptr) 
 			{
 				mRPMValCb->onRpmChanged(rpm);
@@ -82,6 +84,7 @@ bool ObservationIVIContract::initSomeIP()
 	multiDoorSubscription_ = perceptionProxy_->getMultiDoorNotifyEvent().subscribe(
 		[this](const std::vector<v1::coda::vehicle::Perception::S_DoorState>& doorStates) 
 		{			
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Door State Notification Received");
 			for (uint32_t iter = FRONT_LEFT_DOOR; iter < NUM_OF_DOORS; iter++)
 			{
 				if (mDoorStateCbs[iter] != nullptr)
@@ -93,6 +96,7 @@ bool ObservationIVIContract::initSomeIP()
 	ultrasonicSubscriptions_[0] = perceptionProxy_->getNotifyUltrasonic_1Event().subscribe(
 		[this](const float& ultrasonic_1) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 1 Notification: %f", static_cast<float>(ultrasonic_1));
 			if (mUltrasonicReadingCbs[ULTRASONIC_1] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_1]->onUltrasonicChanged(ULTRASONIC_1, ultrasonic_1);
@@ -103,6 +107,7 @@ bool ObservationIVIContract::initSomeIP()
 	ultrasonicSubscriptions_[1] = perceptionProxy_->getNotifyUltrasonic_2Event().subscribe(
 		[this](const float& ultrasonic_2) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 2 Notification: %f", static_cast<float>(ultrasonic_2));
 			if (mUltrasonicReadingCbs[ULTRASONIC_2] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_2]->onUltrasonicChanged(ULTRASONIC_2, ultrasonic_2);
@@ -113,6 +118,7 @@ bool ObservationIVIContract::initSomeIP()
 	ultrasonicSubscriptions_[2] = perceptionProxy_->getNotifyUltrasonic_3Event().subscribe(
 		[this](const float& ultrasonic_3) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 3 Notification: %f", static_cast<float>(ultrasonic_3));
 			if (mUltrasonicReadingCbs[ULTRASONIC_3] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_3]->onUltrasonicChanged(ULTRASONIC_3, ultrasonic_3);
@@ -123,6 +129,7 @@ bool ObservationIVIContract::initSomeIP()
 	ultrasonicSubscriptions_[3] = perceptionProxy_->getNotifyUltrasonic_4Event().subscribe(
 		[this](const float& ultrasonic_4) 
 		{
+			__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Ultrasonic 4 Notification: %f", static_cast<float>(ultrasonic_4));
 			if (mUltrasonicReadingCbs[ULTRASONIC_4] != nullptr) 
 			{
 				mUltrasonicReadingCbs[ULTRASONIC_4]->onUltrasonicChanged(ULTRASONIC_4, ultrasonic_4);
@@ -130,28 +137,24 @@ bool ObservationIVIContract::initSomeIP()
 		}
 	);
 
-	perceptionProxy_->getNotifyGearStateEvent().subscribe(
-		[this](const v1::coda::vehicle::Perception::GearState& gearState) 
-		{
-			std::cout << "Gear State Notification: " << static_cast<int>(gearState) << std::endl;
-			bool isEvsAppRunning = false;
-			{
-				std::lock_guard<std::mutex> lock(evsAppMutex_);
-				isEvsAppRunning = isEvsAppRunning_;
-			}
-			if (gearState == v1::coda::vehicle::Perception::GearState::REVERSE && (!isEvsAppRunning)) 
-			{
-				startEvsApp();
-			} 
-			else 
-			{
-				if(isEvsAppRunning && (evsAppPid_ != -1))
-				{
-					stopEvsApp();
-				}
-			}
-		}
-	);
+perceptionProxy_->getNotifyGearStateEvent().subscribe(
+    [this](const v1::coda::vehicle::Perception::GearState& gearState) {
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Gear State Notification: %d", static_cast<int>(gearState));
+        bool isEvsAppRunning = false;
+        {
+            std::lock_guard<std::mutex> lock(evsAppMutex_);
+            isEvsAppRunning = isEvsAppRunning_;
+        }
+        if (gearState == v1::coda::vehicle::Perception::GearState::REVERSE) {
+            if (!isEvsAppRunning) {
+                startEvsApp();
+            }
+        } 
+        else if (isEvsAppRunning) {
+            stopEvsApp();
+        }
+    }
+);
 	
 
 	

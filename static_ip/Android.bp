@@ -1,0 +1,5 @@
+sh_binary {
+    name: "net_static_ip.sh",
+    src: "net_static_ip.sh",
+    init_rc: ["init.staticip.rc"],
+}
