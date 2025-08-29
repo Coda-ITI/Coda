@@ -22,7 +22,7 @@ int main()
     if (status == STATUS_OK) 
     {
         __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Service registered successfully.");
-        //observation->initSomeIP();
+        observation->initSomeIP();
 
         __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "hello from coda service!!!.");      
     } 
